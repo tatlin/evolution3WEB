@@ -325,11 +325,29 @@ class Muscle{
     return new Muscle(max(period+rInt(),0),
     newc1,newc2,newCT,newET,newCL2,newEL2,isItContracted(newCT,newET),newR);
   }
-}
-class Bone{
-  Bone(){
+  
+  Muscle makeStiff(){ //bones are a very stiff muscle for now
+    period  = 1;
+    c1 = 1;
+    c2 = 1;
+    contractTime = 1;
+    extendTime = 1;
+    contractLength = 2;
+    extendLength = 2;
+    contracted = true;
+    rigidity = .1;
+    return new Muscle( period,  c1,  c2,  contractTime, extendTime,  contractLength,  extendLength,  contracted,  rigidity);
   }
 }
+class Bone{
+  
+  int period, c1, c2;
+  float contractTime,contractLength, extendTime, extendLength;
+  float thruPeriod;
+  boolean contracted;
+  float rigidity;
+}
+
 class Creature{
   ArrayList<Node> n;
   ArrayList<Muscle> m;
@@ -1251,7 +1269,7 @@ void setup(){
 }
 void draw(){
   scale(1);
-  if(menu == 0){
+  if(menu == 0){//start screen
     background(255);
     fill(100,200,100);
     noStroke();
@@ -1259,7 +1277,7 @@ void draw(){
     fill(0);
     text("EVOLUTION!", windowWidth/2,200);
     text("START", windowWidth/2,430);
-  }else if(menu == 1){
+  }else if(menu == 1){//initialization screen
     noStroke();
     fill(0);
     background(255,200,130);
@@ -1311,47 +1329,86 @@ void draw(){
         startASAP();
       }
     }
-  }else if(menu == 2){
+  }else if(menu == 2){//creature setup, will show matrix of creatures populated
     creatures = 0;
     camzoom = 0.12;
     background(220,253,102);
     for(int y = 0; y < 25; y++){
       for(int x = 0; x < 40; x++){
+//        n.clear();
+//        m.clear();
+//        int nodeNum = int(random(4,8));
+//        int muscleNum = int(random(nodeNum-1,nodeNum*4-8));
+//        for(int i = 0; i < nodeNum; i++){
+//          n.add(new Node(random(-1,1),random(-1,1),0,0,
+//          random(MINIMUM_NODE_SIZE,MAXIMUM_NODE_SIZE),
+//          random(MINIMUM_NODE_FRICTION,MAXIMUM_NODE_FRICTION))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
+//        }
+//        for(int i = 0; i < muscleNum; i++){
+//          int tc1;
+//          int tc2;
+//          if(i < nodeNum-1){
+//            tc1 = i;
+//            tc2 = i+1;
+//          }else{
+//            tc1 = int(random(0,nodeNum));
+//            tc2 = tc1;
+//            while(tc2 == tc1){
+//              tc2 = int(random(0,nodeNum));
+//            }
+//          }
+//          float rlength1 = random(0.5,1.5);
+//          float rlength2 = random(0.5,1.5);
+//          float rtime1 = random(0,1);
+//          float rtime2 = random(0,1);
+//          m.add(new Muscle(int(random(1,3)),tc1,tc2,rtime1,rtime2,
+//          min(rlength1,rlength2),max(rlength1,rlength2),isItContracted(rtime1,rtime2),random(0.02,0.08)));
+//          //if(i==2)
+//          //  m.get(i).makeStiff();
+//        }
+//        toStableConfiguration(nodeNum,muscleNum);
+//        adjustToCenter(nodeNum);
+        //float heartbeat = random(40,80);
+
         n.clear();
         m.clear();
-        int nodeNum = int(random(4,8));
-        int muscleNum = int(random(nodeNum-1,nodeNum*4-8));
-        for(int i = 0; i < nodeNum; i++){
-          n.add(new Node(random(-1,1),random(-1,1),0,0,
+        int nodeRows = 3;
+        int nodeCols = 4;
+        int nodeNum = nodeRows*nodeCols;
+        int muscleNum = nodeNum-1;
+        for(int i = 0; i < nodeRows; i++){
+          for(int j = 0; j < nodeCols; j++){
+            n.add(new Node(j,-i,0,0,
           random(MINIMUM_NODE_SIZE,MAXIMUM_NODE_SIZE),
           random(MINIMUM_NODE_FRICTION,MAXIMUM_NODE_FRICTION))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
+          }
         }
-        for(int i = 0; i < muscleNum; i++){
-          int tc1;
-          int tc2;
-          if(i < nodeNum-1){
-            tc1 = i;
-            tc2 = i+1;
-          }else{
-            tc1 = int(random(0,nodeNum));
-            tc2 = tc1;
-            while(tc2 == tc1){
-              tc2 = int(random(0,nodeNum));
+        //m.add(new Muscle(2,0,1,1,1.1,1,2,true,0.1));
+        //m.add(new Muscle(2,1,2,1,1.1,1,2,true,0.1));
+        //m.add(new Muscle(2,2,3,1,1.1,1,2,true,0.1));
+        
+        for(int i = 0; i < nodeRows-1; i++){
+          for(int j = 0; j < nodeCols-1; j++){//row
+            int pt1 = i*nodeCols+j;
+            int pt2=i*nodeCols+j+1;
+            m.add(new Muscle(2,pt1,pt2,1,1,1,2,true,0.1));
+            println("horx bar pt1:" + pt1 + " pt2:" + pt2);
+            if(i>0 && i<nodeRows){
+              m.add(new Muscle(2,i*nodeCols+j,i+j,1,1,1,2,true,0.1));
+              println("vert bar pt1:" + pt1 + "pt2:" + pt2);
             }
           }
-          float rlength1 = random(0.5,1.5);
-          float rlength2 = random(0.5,1.5);
-          float rtime1 = random(0,1);
-          float rtime2 = random(0,1);
-          m.add(new Muscle(int(random(1,3)),tc1,tc2,rtime1,rtime2,
-          min(rlength1,rlength2),max(rlength1,rlength2),isItContracted(rtime1,rtime2),random(0.02,0.08)));
+          
         }
-        toStableConfiguration(nodeNum,muscleNum);
+        
+        //toStableConfiguration(nodeNum,muscleNum);
         adjustToCenter(nodeNum);
         float heartbeat = random(40,80);
         c[y*40+x] = new Creature(y*40+x+1,new ArrayList<Node>(n),new ArrayList<Muscle>(m),0,true,heartbeat,1.0);
+        int indexC = y*40+x;
+        println("creature: " + indexC );
         c[y*40+x].checkForOverlap();
-        c[y*40+x].checkForLoneNodes();
+        //c[y*40+x].checkForLoneNodes();
         drawCreatureWhole(c[y*40+x],x*30+55,y*25+30,0);
       }
     }

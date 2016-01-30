@@ -372,22 +372,22 @@ class Creature{
     for(int i = 0; i < n.size(); i++){
       modifiedCreature.n.add(n.get(i).modifyNode(mutability));
     }
-    for(int i = 0; i < m.size(); i++){
-      modifiedCreature.m.add(m.get(i).modifyMuscle(n.size(),mutability));
-    }
-    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR || n.size() <= 2){ //Add a node
-      modifiedCreature.addRandomNode();
-    }
-    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR){ //Add a muscle
-      modifiedCreature.addRandomMuscle(-1,-1);
-    }
-    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR && modifiedCreature.n.size() >= 4){ //Remove a node
-      modifiedCreature.removeRandomNode();
-    }
-    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR && modifiedCreature.m.size() >= 2){ //Remove a muscle
-      modifiedCreature.removeRandomMuscle();
-    }
-    modifiedCreature.checkForOverlap();
+    //for(int i = 0; i < m.size(); i++){
+    //  modifiedCreature.m.add(m.get(i).modifyMuscle(n.size(),mutability));
+    //}
+//    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR || n.size() <= 2){ //Add a node
+//      modifiedCreature.addRandomNode();
+//    }
+//    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR){ //Add a muscle
+//      modifiedCreature.addRandomMuscle(-1,-1);
+//    }
+//    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR && modifiedCreature.n.size() >= 4){ //Remove a node
+//      modifiedCreature.removeRandomNode();
+//    }
+//    if(random(0,1) < 0.04*mutability*MUTABILITY_FACTOR && modifiedCreature.m.size() >= 2){ //Remove a muscle
+//      modifiedCreature.removeRandomMuscle();
+//    }
+//    modifiedCreature.checkForOverlap();
     modifiedCreature.checkForLoneNodes();
     return modifiedCreature;
   }
@@ -407,7 +407,7 @@ class Creature{
     for(int i = bads.size()-1; i >= 0; i--){
       int b = bads.get(i)+0;
       if(b < m.size()){
-        m.remove(b);
+       // m.remove(b);
       }
     }
   }
@@ -1372,10 +1372,12 @@ void draw(){
 
         n.clear();
         m.clear();
-        int nodeRows = 3;
-        int nodeCols = 4;
+        int nodeRows = 2;
+        int nodeCols = 2;
         int nodeNum = nodeRows*nodeCols;
         int muscleNum = nodeNum-1;
+        int pt1;
+        int pt2;
         for(int i = 0; i < nodeRows; i++){
           for(int j = 0; j < nodeCols; j++){
             n.add(new Node(j,-i,0,0,
@@ -1383,34 +1385,37 @@ void draw(){
           random(MINIMUM_NODE_FRICTION,MAXIMUM_NODE_FRICTION))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
           }
         }
-        //m.add(new Muscle(2,0,1,1,1.1,1,2,true,0.1));
-        //m.add(new Muscle(2,1,2,1,1.1,1,2,true,0.1));
-        //m.add(new Muscle(2,2,3,1,1.1,1,2,true,0.1));
-        
+//MDJ_Truss
         for(int i = 0; i < nodeRows; i++){
           for(int j = 0; j < nodeCols-1; j++){//row
-            int pt1 = i*nodeCols+j;
-            int pt2=i*nodeCols+j+1;
+            pt1 = i*nodeCols+j;
+            pt2 = i*nodeCols+j+1;
             m.add(new Muscle(2,pt1,pt2,1,1,1,2,true,0.1));
-            println("horx bar pt1:" + pt1 + " pt2:" + pt2);
+            println("horz bar pt1:" + pt1 + " pt2:" + pt2);
             
           }
           
           for(int j = 0; j < nodeCols; j++){//col
             if(i>0 && i<=nodeRows){
-              m.add(new Muscle(2,i*nodeCols+j,j,1,1,1,2,true,0.1));
+              pt1 = i*nodeCols+j;
+              pt2 = j;
+              m.add(new Muscle(2,pt1,pt2,1,1,1,2,true,0.1));
+              println("vert bar pt1:" + pt1 + " pt2:" + pt2);
             }
           }
           
           for(int j = 0; j < nodeCols-1; j++){//col
             if(i>0 && i<=nodeRows-1){
-              m.add(new Muscle(2,i*nodeCols+j+1,(i-1)*nodeCols+j,1,1,1.1,2,true,0.1));
-              m.add(new Muscle(2,i*nodeCols+j,(i-1)*nodeCols+j+1,1,1.1,1,2,true,0.1));
+              pt1 = i*nodeCols+j+1;
+              pt2 = (i-1)*nodeCols+j;
+              m.add(new Muscle(2,pt1,pt2,1,1,1,2,true,0.1));
+              m.add(new Muscle(2,i*nodeCols+j,(i-1)*nodeCols+j+1,1,1,1,2,true,0.1));
+              
             }
           }
         }
         
-        //toStableConfiguration(nodeNum,muscleNum);
+        toStableConfiguration(nodeNum,muscleNum);
         adjustToCenter(nodeNum);
         float heartbeat = random(40,80);
         c[y*40+x] = new Creature(y*40+x+1,new ArrayList<Node>(n),new ArrayList<Muscle>(m),0,true,heartbeat,1.0);

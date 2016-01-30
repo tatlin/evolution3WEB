@@ -1387,18 +1387,27 @@ void draw(){
         //m.add(new Muscle(2,1,2,1,1.1,1,2,true,0.1));
         //m.add(new Muscle(2,2,3,1,1.1,1,2,true,0.1));
         
-        for(int i = 0; i < nodeRows-1; i++){
+        for(int i = 0; i < nodeRows; i++){
           for(int j = 0; j < nodeCols-1; j++){//row
             int pt1 = i*nodeCols+j;
             int pt2=i*nodeCols+j+1;
             m.add(new Muscle(2,pt1,pt2,1,1,1,2,true,0.1));
             println("horx bar pt1:" + pt1 + " pt2:" + pt2);
-            if(i>0 && i<nodeRows){
-              m.add(new Muscle(2,i*nodeCols+j,i+j,1,1,1,2,true,0.1));
-              println("vert bar pt1:" + pt1 + "pt2:" + pt2);
+            
+          }
+          
+          for(int j = 0; j < nodeCols; j++){//col
+            if(i>0 && i<=nodeRows){
+              m.add(new Muscle(2,i*nodeCols+j,j,1,1,1,2,true,0.1));
             }
           }
           
+          for(int j = 0; j < nodeCols-1; j++){//col
+            if(i>0 && i<=nodeRows-1){
+              m.add(new Muscle(2,i*nodeCols+j+1,(i-1)*nodeCols+j,1,1,1.1,2,true,0.1));
+              m.add(new Muscle(2,i*nodeCols+j,(i-1)*nodeCols+j+1,1,1.1,1,2,true,0.1));
+            }
+          }
         }
         
         //toStableConfiguration(nodeNum,muscleNum);

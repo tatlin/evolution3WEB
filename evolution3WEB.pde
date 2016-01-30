@@ -25,7 +25,8 @@ boolean haveGround = true;  // true if the ground exists, false if no ground.
 // two opposite vertices.  NOTE: The units are 20 cm, so 1 = 20 cm, and 5 = 1 m.
 // ALSO NOTE: y-values increase as you go down.  So 3 is in the air, and -3 is in the ground.  0 is the surface.
 final Rectangle[] RECTANGLES = {
-/*new Rectangle(2,-0.4,7,1),     //Example hurdles
+new Rectangle(2,-0.1,3,-1),     //Example hurdles
+new Rectangle(4,-0.1,5,-1),/*
 new Rectangle(4,-0.8,9,1),
 new Rectangle(6,-1.2,11,1),
 new Rectangle(8,-1.6,13,1),
@@ -323,6 +324,10 @@ class Muscle{
     }
     return new Muscle(max(period+rInt(),0),
     newc1,newc2,newCT,newET,newCL2,newEL2,isItContracted(newCT,newET),newR);
+  }
+}
+class Bone{
+  Bone(){
   }
 }
 class Creature{
@@ -1272,15 +1277,15 @@ void draw(){
       text("CREATE",56,312);
     }else{
       fill(100,200,100);
-      rect(760,20,460,40);
-      rect(760,70,460,40);
-      rect(760,120,230,40);
+      rect(760,20,460,40);//step by step
+      rect(760,70,460,40);//1 quick
+      rect(760,120,230,40);//1 gen
       if(gensToDo >= 2){
         fill(128,255,128);
       }else{
         fill(70,140,70);
       }
-      rect(990,120,230,40);
+      rect(990,120,230,40);//alap
       fill(0);
       text("Do 1 step-by-step generation.",770,50);
       text("Do 1 quick generation.",770,100);
@@ -1314,8 +1319,8 @@ void draw(){
       for(int x = 0; x < 40; x++){
         n.clear();
         m.clear();
-        int nodeNum = int(random(3,6));
-        int muscleNum = int(random(nodeNum-1,nodeNum*3-6));
+        int nodeNum = int(random(4,8));
+        int muscleNum = int(random(nodeNum-1,nodeNum*4-8));
         for(int i = 0; i < nodeNum; i++){
           n.add(new Node(random(-1,1),random(-1,1),0,0,
           random(MINIMUM_NODE_SIZE,MAXIMUM_NODE_SIZE),
@@ -1363,7 +1368,9 @@ void draw(){
     setGlobalVariables(c[creaturesTested]);
     camzoom = 0.01;
     setMenu(5);
+   
     if(stepbystepslow){
+      
       if(creaturesTested <= 4){
         speed = max(creaturesTested,1);
       }else{
